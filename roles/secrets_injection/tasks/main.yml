@@ -1,0 +1,9 @@
+---
+# Copy .env file to BE app directory
+- name: Copy .env to BE app
+  copy:
+    src: "{{ secrets_file }}"
+    dest: "{{ be_app_dir }}/.env"
+    owner: ubuntu
+    group: ubuntu
+    mode: '0600'

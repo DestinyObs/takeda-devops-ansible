@@ -1,0 +1,21 @@
+
+# Staging environment variables for both FE and BE
+env_name: production
+project_name: takeda-hng-portal
+
+# Frontend
+fe_repo: git@github.com:hngprojects/hng-portal-FE.git
+fe_branch: prod
+fe_domain: takeda.emerj.net
+fe_app_dir: /home/bimbo/hng-portal-FE
+fe_component: frontend
+
+# Backend
+be_repo: git@github.com:hngprojects/HNG-Portal-BE.git
+be_branch: prod
+be_domain: api.takeda.emerj.net
+be_app_dir: /home/bimbo/HNG-Portal-BE
+be_component: backend
+
+# Common
+secrets_file: "{{ playbook_dir }}/production/production.env"

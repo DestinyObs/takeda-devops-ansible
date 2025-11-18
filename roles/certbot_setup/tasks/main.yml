@@ -1,0 +1,23 @@
+---
+# Install Certbot and obtain/renew SSL certificates for FE and BE
+- name: Install Certbot
+  apt:
+    name: certbot
+    state: present
+
+- name: Obtain/renew SSL cert for FE
+  command: certbot certonly --nginx --non-interactive --agree-tos --email admin@takeda.emerj.net -d {{ fe_domain }}
+  args:
+    creates: "/etc/letsencrypt/live/{{ fe_domain }}/fullchain.pem"
+
+- name: Obtain/renew SSL cert for BE
+  command: certbot certonly --nginx --non-interactive --agree-tos --email admin@takeda.emerj.net -d {{ be_domain }}
+  args:
+    creates: "/etc/letsencrypt/live/{{ be_domain }}/fullchain.pem"
+
+- name: Ensure Certbot auto-renewal
+  cron:
+    name: "Certbot renew"
+    job: "certbot renew --quiet && systemctl reload nginx"
+    minute: 0
+    hour: 3

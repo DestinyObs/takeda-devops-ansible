@@ -1,0 +1,10 @@
+# Ignore secrets directory
+secrets/
+# Ansible and environment ignores
+*.retry
+*.log
+*.pyc
+__pycache__/
+.env
+secrets/*.env
+group_vars/all/vault.yml

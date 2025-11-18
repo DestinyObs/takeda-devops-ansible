@@ -1,0 +1,35 @@
+---
+# Template and deploy Nginx config for FE and BE
+- name: Template Nginx config for FE
+  template:
+    src: nginx_fe.conf.j2
+    dest: /etc/nginx/sites-available/hng-portal-fe
+
+- name: Template Nginx config for BE
+  template:
+    src: nginx_be.conf.j2
+    dest: /etc/nginx/sites-available/hng-portal-be
+
+- name: Enable FE Nginx site
+  file:
+    src: /etc/nginx/sites-available/hng-portal-fe
+    dest: /etc/nginx/sites-enabled/hng-portal-fe
+    state: link
+    force: yes
+
+- name: Enable BE Nginx site
+  file:
+    src: /etc/nginx/sites-available/hng-portal-be
+    dest: /etc/nginx/sites-enabled/hng-portal-be
+    state: link
+    force: yes
+
+- name: Remove default Nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Reload Nginx
+  service:
+    name: nginx
+    state: reloaded

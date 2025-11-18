@@ -1,0 +1,62 @@
+---
+# Set up and start FE and BE as systemd services
+- name: Create systemd service for FE
+  copy:
+    dest: /etc/systemd/system/hng-portal-fe.service
+    content: |
+      [Unit]
+      Description=HNG Portal Next.js Application
+      After=network.target
+
+      [Service]
+      Type=simple
+      User=ubuntu
+      WorkingDirectory={{ fe_app_dir }}
+      Environment=PATH=/usr/bin:/usr/local/bin
+      ExecStart=/usr/bin/pnpm run start
+      Restart=on-failure
+      RestartSec=5
+      Environment=NODE_ENV=production
+
+      [Install]
+      WantedBy=multi-user.target
+  notify: Reload systemd
+
+- name: Create systemd service for BE
+  copy:
+    dest: /etc/systemd/system/hng-portal-be.service
+    content: |
+      [Unit]
+      Description=HNG Portal Backend Laravel Application
+      After=network.target
+
+      [Service]
+      Type=simple
+      User=ubuntu
+      Group=www-data
+      WorkingDirectory={{ be_app_dir }}
+      ExecStart=/usr/bin/php {{ be_app_dir }}/artisan serve --host=0.0.0.0 --port=8000
+      Restart=on-failure
+      RestartSec=5
+      Environment=APP_ENV=production
+      Environment=APP_DEBUG=false
+
+      [Install]
+      WantedBy=multi-user.target
+  notify: Reload systemd
+
+- name: Enable and start FE service
+  systemd:
+    name: hng-portal-fe
+    enabled: yes
+    state: started
+
+- name: Enable and start BE service
+  systemd:
+    name: hng-portal-be
+    enabled: yes
+    state: started
+
+handlers:
+  - name: Reload systemd
+    command: systemctl daemon-reload

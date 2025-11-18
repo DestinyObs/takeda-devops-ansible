@@ -1,0 +1,76 @@
+---
+# Install system dependencies for both FE and BE
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install base packages
+  apt:
+    name:
+      - nginx
+      - git
+      - curl
+      - unzip
+      - software-properties-common
+      - mysql-server
+    state: present
+
+# Node.js and pnpm for FE
+- name: Add NodeSource Node.js 20.x repo
+  shell: curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  args:
+    warn: false
+
+- name: Install Node.js
+  apt:
+    name: nodejs
+    state: present
+
+- name: Install pnpm globally
+  npm:
+    name: pnpm
+    global: yes
+
+# PHP, Composer, and extensions for BE
+- name: Add PHP repo
+  apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+
+- name: Install PHP and extensions
+  apt:
+    name:
+      - php8.2
+      - php8.2-cli
+      - php8.2-fpm
+      - php8.2-mysql
+      - php8.2-curl
+      - php8.2-mbstring
+      - php8.2-xml
+      - php8.2-zip
+      - php8.2-bcmath
+      - php8.2-gd
+      - php8.2-intl
+      - php8.2-soap
+      - php8.2-opcache
+    state: present
+
+- name: Install Composer globally
+  shell: |
+    curl -sS https://getcomposer.org/installer | php
+    mv composer.phar /usr/local/bin/composer
+  args:
+    creates: /usr/local/bin/composer
+
+- name: Ensure Nginx is started and enabled
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Ensure MySQL is started and enabled
+  service:
+    name: mysql
+    state: started
+    enabled: yes

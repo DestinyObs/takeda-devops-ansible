@@ -1,0 +1,20 @@
+---
+# Install and configure CloudWatch agent for FE and BE
+- name: Install CloudWatch agent
+  apt:
+    name: amazon-cloudwatch-agent
+    state: present
+
+- name: Template CloudWatch agent config
+  template:
+    src: cloudwatch-config.json.j2
+    dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+
+- name: Start and enable CloudWatch agent
+  systemd:
+    name: amazon-cloudwatch-agent
+    enabled: yes
+    state: started
+
+- name: Reload CloudWatch agent
+  command: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s

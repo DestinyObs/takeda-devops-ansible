@@ -1,0 +1,45 @@
+---
+# Clone FE and BE repos using SSH key from vault, checkout correct branch, and build
+- name: Ensure SSH key for git is present
+  copy:
+    content: "{{ staging_deploy_key }}"
+    dest: /tmp/deploy_key
+    mode: '0600'
+  no_log: true
+
+- name: Clone FE repo
+  git:
+    repo: "{{ fe_repo }}"
+    dest: "{{ fe_app_dir }}"
+    version: "{{ fe_branch }}"
+    key_file: /tmp/deploy_key
+    accept_hostkey: yes
+
+- name: Install FE dependencies
+  command: pnpm install
+  args:
+    chdir: "{{ fe_app_dir }}"
+
+- name: Build FE app
+  command: pnpm run build
+  args:
+    chdir: "{{ fe_app_dir }}"
+
+- name: Clone BE repo
+  git:
+    repo: "{{ be_repo }}"
+    dest: "{{ be_app_dir }}"
+    version: "{{ be_branch }}"
+    key_file: /tmp/deploy_key
+    accept_hostkey: yes
+
+- name: Install BE dependencies (composer)
+  command: composer install
+  args:
+    chdir: "{{ be_app_dir }}"
+
+- name: Remove SSH key
+  file:
+    path: /tmp/deploy_key
+    state: absent
+  no_log: true
