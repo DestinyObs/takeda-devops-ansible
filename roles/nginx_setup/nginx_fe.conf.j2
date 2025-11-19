@@ -1,0 +1,28 @@
+server {
+    listen {{ fe_external_port | default(443) }} ssl;
+    server_name {{ fe_domain }};
+
+    ssl_certificate /etc/letsencrypt/live/{{ fe_domain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ fe_domain }}/privkey.pem;
+
+    access_log /var/log/nginx/{{ fe_component }}_access.log;
+    error_log /var/log/nginx/{{ fe_component }}_error.log;
+
+    location / {
+        proxy_pass http://127.0.0.1:{{ fe_internal_port }};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+server {
+    listen 80;
+    server_name {{ fe_domain }};
+    return 301 https://$host$request_uri;
+}

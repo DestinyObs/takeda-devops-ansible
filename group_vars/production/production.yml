@@ -9,6 +9,8 @@ fe_branch: prod
 fe_domain: takeda.emerj.net
 fe_app_dir: /home/bimbo/hng-portal-FE
 fe_component: frontend
+fe_internal_port: 3000
+fe_external_port: 443
 
 # Backend
 be_repo: git@github.com:hngprojects/HNG-Portal-BE.git
@@ -16,6 +18,16 @@ be_branch: prod
 be_domain: api.takeda.emerj.net
 be_app_dir: /home/bimbo/HNG-Portal-BE
 be_component: backend
+be_internal_port: 8000
+be_external_port: 8080
 
 # Common
 secrets_file: "{{ playbook_dir }}/production/production.env"
+
+certbot_email: destinyobueh14@gmail.com
+certbot_main_domain: takeda.emerj.net
+certbot_domains:
+  - takeda.emerj.net
+  - staging.takeda.emerj.net
+  - api.takeda.emerj.net
+  - api.staging.takeda.emerj.net
